@@ -255,7 +255,7 @@ class RunningTest(RunningCoroutine):
             self.log.info("Starting test: \"%s\"\nDescription: %s" %
                           (self.funcname, self.__doc__))
             self.start_time = time.time()
-            self.start_sim_time = get_sim_time('ns')
+            self.start_sim_time = get_sim_time()
             self.started = True
         return super(RunningTest, self)._advance(outcome)
 

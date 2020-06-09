@@ -70,7 +70,8 @@ def get_sim_time(units=None):
     result = (timeh << 32 | timel)
 
     if units is not None:
-        result = get_time_from_sim_steps(result, units)
+        raise Warning("Units ignored.")
+        #result = get_time_from_sim_steps(result, units)
 
     return result
 
