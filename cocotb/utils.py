@@ -70,7 +70,7 @@ def get_sim_time(units=None):
     result = (timeh << 32 | timel)
 
     if units is not None:
-        raise Warning("Units ignored.")
+        warnings.warn("Units ignored.", stacklevel=2)
         #result = get_time_from_sim_steps(result, units)
 
     return result
@@ -118,7 +118,7 @@ def get_sim_steps(time, units=None):
     """
     result = time
     if units is not None:
-        result = _ldexp10(result, _get_log_time_scale(units) - _get_simulator_precision())
+        warnings.warn("Units ignored.", stacklevel=2)
 
     result_rounded = math.floor(result)
 

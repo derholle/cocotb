@@ -472,4 +472,21 @@ def get_ext():
         )
         ext.append(verilator_vpi_ext)
 
+    #
+    # Fusion
+    #
+    if os.name == "posix":
+        fusion_extra_lib = []
+        fusion_extra_lib_path = []
+        logger.info("Compiling libraries for Fusion")
+
+        fusion_vpi_ext = _get_vpi_lib_ext(
+            include_dir=include_dir,
+            share_lib_dir=share_lib_dir,
+            sim_define="Fusion",
+            extra_lib=fusion_extra_lib,
+            extra_lib_dir=fusion_extra_lib_path,
+        )
+        ext.append(fusion_vpi_ext)
+
     return ext

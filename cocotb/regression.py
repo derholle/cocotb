@@ -466,7 +466,7 @@ class RegressionManager:
         cocotb.log.addHandler(self._test_task.handler)
 
         self._test_start_time = time.time()
-        self._test_start_sim_time = get_sim_time('ns')
+        self._test_start_sim_time = get_sim_time()
         cocotb.scheduler.add_test(self._test_task)
 
     def _log_test_summary(self) -> None:
@@ -557,7 +557,7 @@ class RegressionManager:
         summary += "*************************************************************************************\n"
         summary += "**                                 ERRORS : {0:<39}**\n".format(self.failures)
         summary += "*************************************************************************************\n"
-        summary += "**                               SIM TIME : {0:<39}**\n".format('{0:d} CYC'.format(sim_time))
+        summary += "**                               SIM TIME : {0:<39}**\n".format('{0:d} CYC'.format(sim_time_ns))
         summary += "**                              REAL TIME : {0:<39}**\n".format('{0:.2f} S'.format(real_time))
         summary += "**                        SIM / REAL TIME : {0:<39}**\n".format('{0:.2f} CYC/S'.format(ratio_time))
         summary += "*************************************************************************************\n"
