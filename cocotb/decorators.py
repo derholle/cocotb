@@ -91,6 +91,9 @@ class RunningTask:
 
         if inspect.iscoroutine(inst):
             self._natively_awaitable = True
+        elif isinstance(inst, abc.Coroutine):
+            # workaround for Cython async functions: cython/3427, cython/2273
+            self._natively_awaitable = True
         elif inspect.isgenerator(inst):
             self._natively_awaitable = False
         elif sys.version_info >= (3, 6) and inspect.isasyncgen(inst):
