@@ -287,7 +287,10 @@ class RegressionManager:
         assert test is self._test_task
 
         real_time = time.time() - self._test_start_time
-        sim_time_ns = get_sim_time() - self._test_start_sim_time
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            sim_time_ns = get_sim_time() - self._test_start_sim_time
+        else:
+            sim_time_ns = get_sim_time('ns') - self._test_start_sim_time
 
         # stop capturing log output
         cocotb.log.removeHandler(test.handler)
@@ -467,6 +470,10 @@ class RegressionManager:
 
         self._test_start_time = time.time()
         self._test_start_sim_time = get_sim_time()
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            self._test_start_sim_time = get_sim_time()
+        else:
+            self._test_start_sim_time = get_sim_time('ns')
         cocotb.scheduler.add_test(self._test_task)
 
     def _log_test_summary(self) -> None:
@@ -483,9 +490,13 @@ class RegressionManager:
 
         TEST_FIELD = 'TEST'
         RESULT_FIELD = 'PASS/FAIL'
-        SIM_FIELD = 'SIM TIME(CYC)'
         REAL_FIELD = 'REAL TIME(S)'
-        RATIO_FIELD = 'RATIO(CYC/S)'
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            SIM_FIELD = 'SIM TIME(CYC)'
+            RATIO_FIELD = 'RATIO(CYC/S)'
+        else:
+            SIM_FIELD = 'SIM TIME(NS)'
+            RATIO_FIELD = 'RATIO(NS/S)'
 
         TEST_FIELD_LEN = max(len(TEST_FIELD), len(max([x['test'] for x in self.test_results], key=len)))
         RESULT_FIELD_LEN = len(RESULT_FIELD)
@@ -515,7 +526,10 @@ class RegressionManager:
         summary += "** {a:<{a_len}}  {b:^{b_len}}  {c:>{c_len}}  {d:>{d_len}}  {e:>{e_len}} **\n".format(**header_dict)
         summary += LINE_SEP
 
-        test_line = "{start}** {a:<{a_len}}  {b:^{b_len}}  {c:>{c_len}d}   {d:>{d_len}.2f}   {e:>{e_len}.2f}  **\n"
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            test_line = "{start}** {a:<{a_len}}  {b:^{b_len}}  {c:>{c_len}d}   {d:>{d_len}.2f}   {e:>{e_len}.2f}  **\n"
+        else:
+            test_line = "{start}** {a:<{a_len}}  {b:^{b_len}}  {c:>{c_len}.2f}   {d:>{d_len}.2f}   {e:>{e_len}.2f}  **\n"
         for result in self.test_results:
             hilite = ''
 
@@ -549,7 +563,10 @@ class RegressionManager:
 
     def _log_sim_summary(self) -> None:
         real_time = time.time() - self.start_time
-        sim_time_ns = get_sim_time()
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            sim_time_ns = get_sim_time()
+        else:
+            sim_time_ns = get_sim_time('ns')
         ratio_time = self._safe_divide(sim_time_ns, real_time)
 
         summary = ""
@@ -557,9 +574,15 @@ class RegressionManager:
         summary += "*************************************************************************************\n"
         summary += "**                                 ERRORS : {0:<39}**\n".format(self.failures)
         summary += "*************************************************************************************\n"
-        summary += "**                               SIM TIME : {0:<39}**\n".format('{0:d} CYC'.format(sim_time_ns))
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            summary += "**                               SIM TIME : {0:<39}**\n".format('{0:d} CYC'.format(sim_time_ns))
+        else:
+            summary += "**                               SIM TIME : {0:<39}**\n".format('{0:.2f} NS'.format(sim_time_ns))
         summary += "**                              REAL TIME : {0:<39}**\n".format('{0:.2f} S'.format(real_time))
-        summary += "**                        SIM / REAL TIME : {0:<39}**\n".format('{0:.2f} CYC/S'.format(ratio_time))
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            summary += "**                        SIM / REAL TIME : {0:<39}**\n".format('{0:.2f} CYC/S'.format(ratio_time))
+        else:
+            summary += "**                        SIM / REAL TIME : {0:<39}**\n".format('{0:.2f} NS/S'.format(ratio_time))
         summary += "*************************************************************************************\n"
 
         self.log.info(summary)
@@ -573,6 +596,7 @@ class RegressionManager:
                 return float('nan')
             else:
                 return float('inf')
+
 
 def _create_test(function, name, documentation, mod, *args, **kwargs):
     """Factory function to create tests, avoids late binding.

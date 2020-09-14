@@ -1,2 +1,9 @@
 
-$(COCOTB_RESULTS_FILE):
+include $(shell cocotb-config --makefiles)/Makefile.inc
+
+TOPLEVEL_LANG ?= vhdl
+ifneq ($(TOPLEVEL_LANG),vhdl)
+$(error can only simulate FUSION with VHDL)
+endif
+
+include $(ROOT_DIR)/Makefile

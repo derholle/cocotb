@@ -34,6 +34,7 @@ import sys
 import logging
 import warnings
 
+import cocotb
 from cocotb.utils import (
     get_sim_time, get_time_from_sim_steps, want_color_output
 )
@@ -196,7 +197,11 @@ class SimLogFormatter(logging.Formatter):
         if sim_time is None:
             sim_time_str = "  -.--ns"
         else:
-            sim_time_str = "Cyc %07d:" % (sim_time)
+            if cocotb.SIM_NAME.lower().startswith('fusion'):
+                sim_time_str = "Cyc %07d:" % (sim_time)
+            else:
+                time_ns = get_time_from_sim_steps(sim_time, 'ns')
+                sim_time_str = "{:6.2f}ns".format(time_ns)
         prefix = sim_time_str.rjust(11) + ' ' + level + ' '
         if not _suppress:
             prefix += self.ljust(record.name, _RECORD_CHARS) + \

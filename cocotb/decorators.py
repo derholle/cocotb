@@ -259,7 +259,10 @@ class RunningTest(RunningCoroutine):
             self.log.info("Starting test: \"%s\"\nDescription: %s" %
                           (self.funcname, self.__doc__))
             self.start_time = time.time()
-            self.start_sim_time = get_sim_time()
+            if cocotb.SIM_NAME.lower().startswith('fusion'):
+                self.start_sim_time = get_sim_time()
+            else:
+                self.start_sim_time = get_sim_time('ns')
             self.started = True
         return super(RunningTest, self)._advance(outcome)
 

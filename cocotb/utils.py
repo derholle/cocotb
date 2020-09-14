@@ -34,6 +34,7 @@ import sys
 import weakref
 import functools
 import warnings
+import logging
 
 from cocotb import simulator
 
@@ -70,8 +71,10 @@ def get_sim_time(units=None):
     result = (timeh << 32 | timel)
 
     if units is not None:
-        warnings.warn("Units ignored.", stacklevel=2)
-        #result = get_time_from_sim_steps(result, units)
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            logging.getLogger('cocotb').warning('Time units ignored in FUSION')
+        else:
+            result = get_time_from_sim_steps(result, units)
 
     return result
 
@@ -118,7 +121,10 @@ def get_sim_steps(time, units=None):
     """
     result = time
     if units is not None:
-        warnings.warn("Units ignored.", stacklevel=2)
+        if cocotb.SIM_NAME.lower().startswith('fusion'):
+            logging.getLogger('cocotb').warning('Time units ignored in FUSION')
+        else:
+            result = get_time_from_sim_steps(result, units)
 
     result_rounded = math.floor(result)
 
