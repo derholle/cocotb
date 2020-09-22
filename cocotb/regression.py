@@ -428,6 +428,8 @@ class RegressionManager:
         else:
             test_pass, sim_failed = self._score_test(test, outcome)
             if not test_pass:
+                if cocotb.SIM_NAME.lower().startswith("fusion"):
+                    self._dut._id('_fail').setimmediatevalue(1)
                 self.xunit.add_failure()
                 self.failures += 1
 
