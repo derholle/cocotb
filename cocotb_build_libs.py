@@ -50,11 +50,12 @@ class build_ext(_build_ext):
          - replaces ``.pyd`` with ``.dll`` on windows.
         """
 
+        print(f"checking {ext_name}")
         filename = _build_ext.get_ext_filename(self, ext_name)
 
         # for the simulator python extension library, leaving suffix in place
-        if "simulator" == os.path.split(ext_name)[-1]:
-            return filename
+        #if "simulator" == os.path.split(ext_name)[-1]:
+        #    return filename
 
         head, tail = os.path.split(filename)
         tail_split = tail.split(".")
@@ -68,6 +69,7 @@ class build_ext(_build_ext):
         filename_short = filename_short.replace("libcocotbvpi_icarus.so", "libcocotbvpi_icarus.vpl")
         filename_short = filename_short.replace("libcocotbvpi_icarus.dll", "libcocotbvpi_icarus.vpl")
 
+        print(f"returning {filename_short}")
         return filename_short
 
     def finalize_options(self):
